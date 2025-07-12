@@ -1,5 +1,14 @@
 import React, { useMemo, useRef } from "react";
-import { MenuBarExtra, LocalStorage, Icon, Color, getPreferenceValues, showHUD, environment, open } from "@raycast/api";
+import {
+  MenuBarExtra,
+  LocalStorage,
+  Icon,
+  Color,
+  getPreferenceValues,
+  showHUD,
+  environment,
+  open,
+} from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
 import { useEffect, useState } from "react";
 import { promises as fs } from "fs";
@@ -13,7 +22,7 @@ interface TimerState {
   isFinished: boolean;
   isOverdue: boolean;
   lastNegativeMinuteAlert: number;
-  soundsPlayed: number;  // Add sound counter to timer state
+  soundsPlayed: number; // Add sound counter to timer state
   name: string;
 }
 
@@ -33,7 +42,7 @@ const PRESET_TIMES = [
   { label: "20 minutes", value: 20 },
   { label: "25 minutes", value: 25 },
   { label: "60 minutes", value: 60 },
-  { label: "5 seconds (test sound)", value: 5 / 60 }  // Convert to minutes for consistency
+  { label: "5 seconds (test sound)", value: 5 / 60 }, // Convert to minutes for consistency
 ];
 
 async function loadTimerState(): Promise<TimerState | null> {
@@ -79,9 +88,9 @@ function formatTime(seconds: number): string {
   const absSeconds = Math.abs(seconds);
   const minutes = Math.floor(absSeconds / 60);
   const remainingSeconds = absSeconds % 60;
-  
+
   const sign = isNegative ? "-" : "";
-  
+
   if (minutes >= 1) {
     return `${sign}${minutes}m ${remainingSeconds}s`;
   } else {
@@ -105,15 +114,21 @@ export default function Timer() {
 
   const getMinutes = async () => {
     const lastTime = await LocalStorage.getItem(LAST_TIME_KEY);
-            console.log("Last time", lastTime);
-            const minutes = lastTime != '0' && !isNaN(+lastTime)  ? parseFloat(lastTime as string) : parseInt(preferences.defaultTime);
-            console.log("Starting timer with", minutes, "minutes");
-            console.log("Preferences", preferences);
-            return minutes;
-  }
+    console.log("Last time", lastTime);
+    const minutes =
+      lastTime != "0" && !isNaN(+lastTime)
+        ? parseFloat(lastTime as string)
+        : parseInt(preferences.defaultTime);
+    console.log("Starting timer with", minutes, "minutes");
+    console.log("Preferences", preferences);
+    return minutes;
+  };
 
   async function startTimer(minutesParam?: number) {
-    const minutes = minutesParam && typeof minutesParam === 'number' && !isNaN(minutesParam) ? minutesParam : await getMinutes();
+    const minutes =
+      minutesParam && typeof minutesParam === "number" && !isNaN(minutesParam)
+        ? minutesParam
+        : await getMinutes();
     const timerName = `${minutes} min Timer`;
     const newTimer: TimerState = {
       startTime: Date.now(),
@@ -122,7 +137,7 @@ export default function Timer() {
       isFinished: false,
       isOverdue: false,
       lastNegativeMinuteAlert: 0,
-      soundsPlayed: 0,  // Reset sound counter on new timer
+      soundsPlayed: 0, // Reset sound counter on new timer
       name: timerName,
     };
 
@@ -132,7 +147,9 @@ export default function Timer() {
   }
   // Load timer once on mount
   useEffect(() => {
-    loadTimerState().then(setTimer).finally(() => setIsLoading(false));
+    loadTimerState()
+      .then(setTimer)
+      .finally(() => setIsLoading(false));
   }, []);
 
   // Process timer state when component renders (called by background refresh)
@@ -147,7 +164,7 @@ export default function Timer() {
     // Calculate current state
     const remaining = getRemainingTime(timer);
     const formattedTime = formatTime(remaining);
-    
+
     // Update display time
     setDisplayTime(formattedTime);
 
@@ -156,17 +173,19 @@ export default function Timer() {
       // Calculate how many sounds should have been played by now
       // At 0s: 1 sound, at -60s: 2 sounds, at -120s: 3 sounds, etc.
       const expectedSounds = Math.floor(Math.abs(remaining) / 60) + 1;
-      
+
       if (expectedSounds > timer.soundsPlayed) {
-        console.log(`🔊 Sound played! Expected: ${expectedSounds}, Played: ${timer.soundsPlayed}, Time: ${remaining}s`);
+        console.log(
+          `🔊 Sound played! Expected: ${expectedSounds}, Played: ${timer.soundsPlayed}, Time: ${remaining}s`,
+        );
         playSound();
-        
+
         // Update timer state with new sound count
         const updatedTimer = {
           ...timer,
           soundsPlayed: expectedSounds,
           isFinished: true,
-          isOverdue: true
+          isOverdue: true,
         };
         saveTimerState(updatedTimer);
         setTimer(updatedTimer);
@@ -178,7 +197,7 @@ export default function Timer() {
       const updatedTimer = {
         ...timer,
         isFinished: true,
-        isOverdue: true
+        isOverdue: true,
       };
       saveTimerState(updatedTimer);
       setTimer(updatedTimer);
@@ -197,13 +216,11 @@ export default function Timer() {
     ));
   }, []);
 
-
   async function stopTimer() {
     await deleteTimerState();
     setTimer(null);
     setDisplayTime("");
   }
-
 
   // Calculate display values
   let menuBarTitle = "";
@@ -213,8 +230,8 @@ export default function Timer() {
 
   if (timer?.isActive) {
     const remaining = getRemainingTime(timer);
-    menuBarTitle = `${displayTime || formatTime(remaining)}${timer?.soundsPlayed ? ` (${timer.soundsPlayed}x)` : ''}`;
-    
+    menuBarTitle = `${displayTime || formatTime(remaining)}${timer?.soundsPlayed ? ` (${timer.soundsPlayed}x)` : ""}`;
+
     if (remaining <= 0) {
       // Red when overdue
       menuBarIcon = Icon.ExclamationMark;
@@ -234,49 +251,47 @@ export default function Timer() {
   // @ts-ignore - Suppress all TypeScript JSX compatibility errors
   return (
     // @ts-ignore - Suppress TypeScript JSX compatibility errors
-    <MenuBarExtra 
+    <MenuBarExtra
       icon={{ source: menuBarIcon, tintColor: iconTintColor }}
-      title={menuBarTitle} 
+      title={menuBarTitle}
       tooltip={tooltipText}
       isLoading={isLoading}
     >
-      
       {timer?.isActive && (
         <>
-        <MenuBarExtra.Item
-          title="Restart Timer"
-          icon={Icon.Stop}
-          onAction={startTimer}
-        />
-        <MenuBarExtra.Item
-          title="Stop Timer"
-          icon={Icon.Stop}
-          onAction={stopTimer}
-        />
+          <MenuBarExtra.Item
+            title="Restart Timer"
+            icon={Icon.Stop}
+            onAction={startTimer}
+          />
+          <MenuBarExtra.Item
+            title="Stop Timer"
+            icon={Icon.Stop}
+            onAction={stopTimer}
+          />
         </>
       )}
-      
-      
+
       {!timer?.isActive && !timer?.isFinished && !timer?.isOverdue && (
         <>
-        <MenuBarExtra.Item
-          title="Start Timer"
-          icon={Icon.Play}
-          onAction={startTimer}
-        />
-        <MenuBarExtra.Submenu title="Change Time" icon={Icon.Clock}>
-          {presetMenuItems}
-          {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
           <MenuBarExtra.Item
-            title="Custom..."
-            icon={Icon.Plus}
-            onAction={async () => {
-              await open("raycast://extensions/quave-timer/custom-time-form");
-            }}
+            title="Start Timer"
+            icon={Icon.Play}
+            onAction={startTimer}
           />
-        </MenuBarExtra.Submenu></>
+          <MenuBarExtra.Submenu title="Change Time" icon={Icon.Clock}>
+            {presetMenuItems}
+            {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
+            <MenuBarExtra.Item
+              title="Custom..."
+              icon={Icon.Plus}
+              onAction={async () => {
+                await open("raycast://extensions/quave-timer/custom-time-form");
+              }}
+            />
+          </MenuBarExtra.Submenu>
+        </>
       )}
-      
     </MenuBarExtra>
   );
 }
