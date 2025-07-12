@@ -12,7 +12,7 @@
       "title": "Quave Timer",
       "description": "A simple countdown timer with menu bar integration",
       "mode": "menu-bar",
-      "interval": "1s"
+      "interval": "10s"
     },
     {
       "name": "custom-time-form",
