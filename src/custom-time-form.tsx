@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import { 
-  Form, 
-  ActionPanel, 
-  Action, 
-  showHUD, 
+import {
+  Form,
+  ActionPanel,
+  Action,
+  showHUD,
   popToRoot,
-  LocalStorage
+  LocalStorage,
 } from "@raycast/api";
 import { promises as fs } from "fs";
 import { join } from "path";
 import { homedir } from "os";
+
+// Type assertion for Raycast components
+const FormComponent = Form as any;
+const ActionPanelComponent = ActionPanel as any;
+const ActionComponent = Action as any;
 
 interface TimerState {
   startTime: number;
@@ -49,7 +54,7 @@ export default function CustomTimeForm() {
 
       await saveTimerState(newTimer);
       await LocalStorage.setItem(LAST_TIME_KEY, minutes);
-      
+
       showHUD(`Timer started: ${minutesNumber} minutes`);
       popToRoot();
     } else {
@@ -58,26 +63,21 @@ export default function CustomTimeForm() {
   };
 
   return (
-    // @ts-ignore - Suppress TypeScript JSX compatibility errors
-    <Form
+    <FormComponent
       actions={
-        // @ts-ignore - Suppress TypeScript JSX compatibility errors
-        <ActionPanel>
-          {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
-          <Action title="Start Timer" onAction={handleSubmit} />
-        </ActionPanel>
+        <ActionPanelComponent>
+          <ActionComponent title="Start Timer" onAction={handleSubmit} />
+        </ActionPanelComponent>
       }
     >
-      {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
-      <Form.TextField
+      <FormComponent.TextField
         id="minutes"
         title="Minutes"
         placeholder="Enter minutes (1-999)"
         value={minutes}
         onChange={setMinutes}
       />
-      {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
-      <Form.Description text="Enter any number of minutes from 1 to 999 to start a custom timer." />
-    </Form>
+      <FormComponent.Description text="Enter any number of minutes from 1 to 999 to start a custom timer." />
+    </FormComponent>
   );
-} 
+}

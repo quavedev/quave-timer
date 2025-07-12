@@ -3,7 +3,7 @@
   "title": "Quave Timer",
   "description": "A simple countdown timer with menu bar integration",
   "icon": "timer.png",
-  "author": "your-username",
+  "author": "filipemkv@gmail.com",
   "categories": [
     "Productivity"
   ],
@@ -30,7 +30,8 @@
       "description": "Default duration for the timer in minutes",
       "type": "textfield",
       "default": "20",
-      "placeholder": "20"
+      "placeholder": "20",
+      "required": false
     }
   ],
   "dependencies": {
@@ -41,8 +42,8 @@
   "devDependencies": {
     "@types/node": "20.8.10",
     "@types/react": "18.2.27",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.51.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "^3.6.2",

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import {
   MenuBarExtra,
   LocalStorage,
@@ -6,7 +6,6 @@ import {
   Color,
   getPreferenceValues,
   showHUD,
-  environment,
   open,
 } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
@@ -14,6 +13,11 @@ import { useEffect, useState } from "react";
 import { promises as fs } from "fs";
 import { join } from "path";
 import { homedir } from "os";
+
+// Type assertion for Raycast components
+const MenuBarExtraComponent = MenuBarExtra as any;
+const MenuBarExtraItem = MenuBarExtra.Item as any;
+const MenuBarExtraSubmenu = MenuBarExtra.Submenu as any;
 
 interface TimerState {
   startTime: number;
@@ -145,6 +149,16 @@ export default function Timer() {
     await LocalStorage.setItem(LAST_TIME_KEY, minutes.toString());
     setTimer(newTimer);
   }
+
+  // Handler for menu actions that don't need parameters
+  const handleStartTimer = () => {
+    startTimer();
+  };
+
+  const handleRestartTimer = () => {
+    startTimer();
+  };
+
   // Load timer once on mount
   useEffect(() => {
     loadTimerState()
@@ -191,24 +205,12 @@ export default function Timer() {
         setTimer(updatedTimer);
       }
     }
-
-    // Update timer state only when necessary (for overdue status)
-    else if (remaining <= 0 && !timer.isOverdue) {
-      const updatedTimer = {
-        ...timer,
-        isFinished: true,
-        isOverdue: true,
-      };
-      saveTimerState(updatedTimer);
-      setTimer(updatedTimer);
-    }
   }, [timer]);
 
   // Memoize menu items to prevent re-renders
   const presetMenuItems = useMemo(() => {
     return PRESET_TIMES.map((preset) => (
-      // @ts-ignore - Suppress TypeScript JSX compatibility errors
-      <MenuBarExtra.Item
+      <MenuBarExtraItem
         key={preset.value}
         title={preset.label}
         onAction={() => startTimer(preset.value)}
@@ -226,7 +228,7 @@ export default function Timer() {
   let menuBarTitle = "";
   let menuBarIcon = Icon.Clock;
   let iconTintColor = Color.SecondaryText;
-  let tooltipText = "Quave Timer";
+  const tooltipText = "Quave Timer";
 
   if (timer?.isActive) {
     const remaining = getRemainingTime(timer);
@@ -244,14 +246,12 @@ export default function Timer() {
   }
 
   if (isLoading) {
-    return <MenuBarExtra icon={Icon.Clock} isLoading={true} />;
+    return <MenuBarExtraComponent icon={Icon.Clock} isLoading={true} />;
   }
   console.log("Timer component rendered");
 
-  // @ts-ignore - Suppress all TypeScript JSX compatibility errors
   return (
-    // @ts-ignore - Suppress TypeScript JSX compatibility errors
-    <MenuBarExtra
+    <MenuBarExtraComponent
       icon={{ source: menuBarIcon, tintColor: iconTintColor }}
       title={menuBarTitle}
       tooltip={tooltipText}
@@ -259,12 +259,12 @@ export default function Timer() {
     >
       {timer?.isActive && (
         <>
-          <MenuBarExtra.Item
+          <MenuBarExtraItem
             title="Restart Timer"
             icon={Icon.Stop}
-            onAction={startTimer}
+            onAction={handleRestartTimer}
           />
-          <MenuBarExtra.Item
+          <MenuBarExtraItem
             title="Stop Timer"
             icon={Icon.Stop}
             onAction={stopTimer}
@@ -274,24 +274,23 @@ export default function Timer() {
 
       {!timer?.isActive && !timer?.isFinished && !timer?.isOverdue && (
         <>
-          <MenuBarExtra.Item
+          <MenuBarExtraItem
             title="Start Timer"
             icon={Icon.Play}
-            onAction={startTimer}
+            onAction={handleStartTimer}
           />
-          <MenuBarExtra.Submenu title="Change Time" icon={Icon.Clock}>
+          <MenuBarExtraSubmenu title="Change Time" icon={Icon.Clock}>
             {presetMenuItems}
-            {/* @ts-ignore - Suppress TypeScript JSX compatibility errors */}
-            <MenuBarExtra.Item
+            <MenuBarExtraItem
               title="Custom..."
               icon={Icon.Plus}
               onAction={async () => {
                 await open("raycast://extensions/quave-timer/custom-time-form");
               }}
             />
-          </MenuBarExtra.Submenu>
+          </MenuBarExtraSubmenu>
         </>
       )}
-    </MenuBarExtra>
+    </MenuBarExtraComponent>
   );
 }
