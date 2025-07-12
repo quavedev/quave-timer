@@ -7,9 +7,6 @@ A simple timer extension for Raycast with menu bar integration.
 - **Menu Bar Integration**: Shows timer countdown in the menu bar
 - **Visual Feedback**: Different icons and colors for different states
 - **Sound Alerts**: Plays system sound when timer finishes
-- **Easy Controls**: 
-  - Left click to start/restart timer
-  - Right click for menu with stop, change time, and restart options
 - **Predefined Times**: Quick access to 1, 5, 10, 15, 25, and 30-minute timers
 - **Persistent Alert**: Timer continues to alert until dismissed
 
