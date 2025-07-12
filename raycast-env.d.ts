@@ -20,6 +20,8 @@ declare namespace Preferences {
   export type Timer = ExtensionPreferences & {}
   /** Preferences accessible in the `custom-time-form` command */
   export type CustomTimeForm = ExtensionPreferences & {}
+  /** Preferences accessible in the `start-timer` command */
+  export type StartTimer = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -27,5 +29,7 @@ declare namespace Arguments {
   export type Timer = {}
   /** Arguments passed to the `custom-time-form` command */
   export type CustomTimeForm = {}
+  /** Arguments passed to the `start-timer` command */
+  export type StartTimer = {}
 }
 

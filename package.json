@@ -21,6 +21,12 @@
       "title": "Set Custom Time",
       "description": "Set a custom timer duration",
       "mode": "view"
+    },
+    {
+      "name": "start-timer",
+      "title": "Start Timer",
+      "description": "Start the timer with default/last used time",
+      "mode": "view"
     }
   ],
   "preferences": [
