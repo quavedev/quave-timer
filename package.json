@@ -27,6 +27,12 @@
       "title": "Start Timer",
       "description": "Start the timer with default/last used time",
       "mode": "view"
+    },
+    {
+      "name": "stop-timer",
+      "title": "Stop Timer",
+      "description": "Stop the currently running timer",
+      "mode": "view"
     }
   ],
   "preferences": [

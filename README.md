@@ -42,10 +42,11 @@ A simple timer extension for Raycast with menu bar integration.
 ## Usage
 
 1. **Start Timer**: Click on the timer in the menu bar or search for "Start Timer" in Raycast
-2. **Menu Bar Controls**:
+2. **Stop Timer**: Search for "Stop Timer" in Raycast to stop the currently running timer
+3. **Menu Bar Controls**:
    - **Left Click**: Start timer (if stopped) or restart with same time (if finished)
    - **Right Click**: Access full menu with options
-3. **When Timer Finishes**:
+4. **When Timer Finishes**:
    - Plays system alert sound
    - Shows "DONE" in menu bar with red bell icon
    - Continues to alert until you click it
